@@ -1,0 +1,69 @@
+#!/usr/bin/env python3.8
+
+
+# this code will generate the cisco nxos commands required to create a new vlan in Neda DC
+
+def create_new_vlan():
+    # First we retrieve  the vlan number we want to create
+    new_vlan = input("\n please type the vlan number: ")
+    # second we ask about the Vlan name
+    new_vlan_name = input("\n Please type the Vlan Name (e.g. Storage_Public) : ")
+    # third we ask about the IP address of the SVI, This IP address is the anycast gateway 
+    SVI_IP_ADDRESS = input("\n Please type the SVI IP Address(e.g. 172.19.1.1/24): ")
+    # the we will print the nxos commands based on the conditions we defined
+    # It is important that for us to know the vlan number is under the 10,100 or 1000 because the value
+    # of the multicast group will be changed based on these numbers
+    print(f"vlan {new_vlan}")
+    print(" "+ f"name {new_vlan_name}")
+    if int(new_vlan) < 10 :
+        print(" " + f"vn-segment 8000{new_vlan}")
+    elif int(new_vlan) > 999 :
+        print(" " + f"vn-segment 8{new_vlan}")
+    elif int(new_vlan) < 100:
+        print(" " + f"vn-segment 800{new_vlan}")
+    else:
+        print(" " + f"vn-segment 80{new_vlan}")
+    print("exit")
+    print(f"interface vlan {new_vlan}")
+    print(" " + "shutdown")
+    print(" " + "mtu 9192")
+    print(" " + "vrf member Sotoon")
+    if SVI_IP_ADDRESS :
+        print(" " + f"ip address {SVI_IP_ADDRESS}")
+    print("interfce nve1")
+    if int(new_vlan) < 10 :
+         print(" " + f"member vni 8000{new_vlan}")
+    elif int(new_vlan) > 999 :
+         print(" " + f"member vni 8{new_vlan}")
+    elif int(new_vlan) < 100:
+        print(" " + f"member vni 800{new_vlan}")
+    else:
+        print(" " + f"member vni 80{new_vlan}")
+
+    print(" " + f"mcast-group 238.0.0.{new_vlan}")
+    
+    print("evpn")
+    if int(new_vlan) < 10 :
+        print(" " + f"vni 8000{new_vlan} l2")
+        print("  " + "rd auto")
+        print("  " + "route-target import auto")
+        print("  " + "route-target export auto")   
+    elif int(new_vlan) < 100:
+        print(" " + f"vni 800{new_vlan} l2")
+        print("  " + "rd auto")
+        print("  " + "route-target import auto")
+        print("  " + "route-target export auto")
+    elif int(new_vlan) > 999 :
+        print(" " + f"vni 8{new_vlan} l2")
+        print("  " + "rd auto")
+        print("  " + "route-target import auto")
+        print("  " + "route-target export auto") 
+    else:
+        print(" " + f"vni 80{new_vlan} l2")
+        print("  " + "rd auto")
+        print("  " + "route-target import auto")
+        print("  " + "route-target export auto")
+
+    print("end")
+
+a = create_new_vlan()
