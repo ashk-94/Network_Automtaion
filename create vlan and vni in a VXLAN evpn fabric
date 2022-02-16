@@ -1,7 +1,7 @@
 #!/usr/bin/env python3.8
 
 
-# this code will generate the cisco nxos commands required to create a new vlan in Neda DC
+# this code will generate the cisco nxos commands required to create a new vlan in DC
 
 def create_new_vlan():
     # First we retrieve  the vlan number we want to create
